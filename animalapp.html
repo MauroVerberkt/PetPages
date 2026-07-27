@@ -70,11 +70,13 @@ body{
     width:90px;
     height:90px;
     border-radius:50%;
-    background:linear-gradient(145deg,#FFE7B2,#FFC864);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:44px;
+    overflow:hidden;
+}
+
+.avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
 }
 
 .pet-info h2{
@@ -203,7 +205,9 @@ button:hover{
         <div class="card">
 
             <div class="pet-header">
-                <div class="avatar">🐶</div>
+                <div class="avatar">
+                    <img src="Golden_Retriever_Pup_2.jpg" alt="Golden Retriever puppy">
+                </div>
 
                 <div class="pet-info">
                     <h2>Charlie</h2>
@@ -301,9 +305,6 @@ button:hover{
             Request Medical Screening
         </button>
 
-        <div class="note">
-            AI-assisted health screening by licensed veterinary professionals.
-        </div>
     </div>
 
 </div>
