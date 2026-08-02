@@ -1,0 +1,4 @@
+- [x] Update `animalapp.html` to include a home dashboard with swipeable pet cards and info button
+- [x] Add detail flow where info opens pet profile with swipe to medical data page
+- [x] Make medical data page show urine/saliva biomarker values and request screening action
+- [x] Verify demo interactions and layout match `design.png` intent
