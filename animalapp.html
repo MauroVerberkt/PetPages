@@ -3,490 +3,710 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pet Health Demo</title>
+<title>PetPages</title>
 <style>
 :root {
-    --background: #f4f7fb;
+    --bg: #f0f4f8;
     --surface: #ffffff;
-    --text: #23303d;
-    --muted: #6f7e90;
-    --primary: #4f8ef7;
-    --border: #e5eaf0;
-    --healthy-bg: #e9f8ee;
-    --healthy-text: #28a85a;
+    --text: #1a2332;
+    --muted: #64748b;
+    --primary: #6366f1;
+    --primary-light: #818cf8;
+    --accent: #10b981;
+    --accent-light: #d1fae5;
+    --border: #e2e8f0;
+    --shadow: 0 4px 24px rgba(0,0,0,.06);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,.1);
+    --radius: 20px;
+    --radius-sm: 12px;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-    background: var(--background);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
     color: var(--text);
+    -webkit-font-smoothing: antialiased;
 }
 
 .app {
-    max-width: 420px;
+    max-width: 440px;
     margin: 0 auto;
     min-height: 100vh;
-    background: var(--background);
+    position: relative;
+    overflow: hidden;
 }
 
-.hidden {
-    display: none;
+/* Views */
+.view { display: none; min-height: 100vh; }
+.view.active { display: flex; flex-direction: column; }
+
+/* ===== HOME VIEW ===== */
+.home-header {
+    padding: 40px 24px 20px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    border-radius: 0 0 28px 28px;
 }
 
-.top-bar {
-    padding: 22px 20px 14px;
+.home-header h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
-.top-bar h1 {
-    font-size: 1.4rem;
-    margin-bottom: 6px;
-}
-
-.top-bar p {
-    color: var(--muted);
-}
-
-.swipe-note {
-    font-size: 0.8rem;
-    color: var(--muted);
-    margin-top: 8px;
+.home-header p {
+    opacity: 0.85;
+    margin-top: 4px;
+    font-size: 0.9rem;
 }
 
 .carousel-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 28px 0;
     overflow: hidden;
-    padding: 6px 0 24px;
 }
 
 .carousel-track {
     display: flex;
-    transition: transform 0.25s ease;
+    transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+    cursor: grab;
 }
 
 .carousel-page {
     min-width: 100%;
     display: flex;
     justify-content: center;
-    padding: 0 16px;
+    padding: 0 28px;
 }
 
-.pet-card,
-.add-card {
+/* Pet Cards */
+.pet-card, .add-card {
     width: 100%;
-    min-height: 560px;
-    border: 3px solid #111;
-    border-radius: 42px;
+    border-radius: 28px;
     background: var(--surface);
+    box-shadow: var(--shadow-lg);
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 36px 24px;
+    padding: 40px 28px 32px;
+    min-height: 480px;
+    transition: transform 0.2s;
 }
+
+.pet-card:active { transform: scale(0.98); }
 
 .avatar {
-    width: 108px;
-    height: 108px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     overflow: hidden;
-    border: 2px solid #111;
-    margin-bottom: 24px;
+    box-shadow: 0 8px 24px rgba(99,102,241,.25);
+    margin-bottom: 22px;
+    border: 4px solid white;
+    outline: 3px solid var(--primary-light);
 }
 
-.avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.pet-name {
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
 }
 
-.pet-line {
-    width: 100%;
-    text-align: left;
-    font-size: 1.9rem;
+.pet-breed {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 18px;
+}
+
+.pet-stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.pet-stat {
+    text-align: center;
+    background: #f8fafc;
+    border-radius: var(--radius-sm);
+    padding: 12px 18px;
+}
+
+.pet-stat-value {
+    font-size: 1.1rem;
     font-weight: 700;
-    margin-bottom: 14px;
+    color: var(--primary);
 }
 
-.pet-meta {
-    width: 100%;
-    text-align: left;
-    font-size: 1.35rem;
-    margin-bottom: 10px;
+.pet-stat-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.status {
-    width: 100%;
-    text-align: left;
-    font-size: 1.35rem;
+.health-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-light);
+    color: #065f46;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
     margin-bottom: auto;
 }
 
-.status-badge {
-    display: inline-block;
-    margin-left: 8px;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: var(--healthy-bg);
-    color: var(--healthy-text);
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.info-btn,
-.screening-btn,
-.back-btn {
-    border: 3px solid #111;
-    background: #fff;
-    color: #111;
-    font-size: 1.8rem;
-    line-height: 1;
-    padding: 12px 24px;
-    border-radius: 4px;
-    cursor: pointer;
+.health-badge::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
 }
 
 .info-btn {
-    margin-top: 26px;
+    margin-top: 24px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 14px 36px;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(99,102,241,.3);
+    transition: all 0.2s;
 }
 
+.info-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99,102,241,.4); }
+
+/* Add Card */
 .add-card {
     justify-content: center;
-    font-size: 8rem;
+    border: 3px dashed var(--border);
+    background: #fafbff;
+    box-shadow: none;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-.details-shell {
-    min-height: 100vh;
+.add-card:hover { border-color: var(--primary-light); background: #f5f3ff; }
+
+.add-icon {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.4rem; color: white; font-weight: 300;
+    margin-bottom: 16px;
+}
+
+.add-label { color: var(--muted); font-weight: 600; }
+
+/* Dots */
+.dots {
     display: flex;
-    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 0 32px;
 }
 
-.details-header {
+.dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all 0.3s;
+}
+
+.dot.active {
+    background: var(--primary);
+    width: 24px;
+    border-radius: 4px;
+}
+
+/* ===== DETAIL VIEW ===== */
+.detail-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 16px;
+    gap: 14px;
+    padding: 20px 20px 14px;
 }
 
 .back-btn {
-    font-size: 1rem;
-    padding: 10px 14px;
+    background: var(--surface);
+    border: none;
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.2s;
 }
 
-.details-title {
-    font-weight: 700;
+.back-btn:hover { background: #f1f5f9; }
+
+.detail-pet-name { font-weight: 700; font-size: 1.1rem; }
+
+/* Tab indicators */
+.tab-bar {
+    display: flex;
+    gap: 4px;
+    padding: 0 20px 14px;
 }
 
-.details-swiper {
-    overflow: hidden;
+.tab {
     flex: 1;
+    padding: 10px;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
 }
+
+.tab.active {
+    background: var(--primary);
+    color: white;
+}
+
+.details-swiper { overflow: hidden; flex: 1; }
 
 .details-track {
     display: flex;
     height: 100%;
-    transition: transform 0.25s ease;
+    transition: transform 0.35s cubic-bezier(.4,0,.2,1);
 }
 
-.detail-page {
-    min-width: 100%;
-    padding: 0 16px 18px;
-}
+.detail-page { min-width: 100%; padding: 0 20px 24px; }
 
 .detail-card {
-    background: #fff;
-    border: 3px solid #111;
-    border-radius: 32px;
-    min-height: calc(100vh - 114px);
-    padding: 22px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+    min-height: calc(100vh - 180px);
     display: flex;
     flex-direction: column;
 }
 
 .detail-card h2 {
-    font-size: 2rem;
-    margin-bottom: 18px;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
 }
 
-.profile-grid {
-    display: grid;
-    gap: 12px;
+.detail-card h2::before {
+    content: '';
+    width: 4px; height: 20px;
+    background: var(--primary);
+    border-radius: 2px;
 }
+
+/* Profile grid */
+.profile-grid { display: grid; gap: 10px; }
 
 .profile-item {
-    background: #f8fbff;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px;
+    background: #f8fafc;
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    display: flex; justify-content: space-between; align-items: center;
 }
 
-.profile-item strong {
-    display: block;
-    color: var(--muted);
-    font-size: 0.78rem;
-    margin-bottom: 4px;
-}
+.profile-item-label { font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+.profile-item-value { font-weight: 600; }
 
-.biomarkers {
-    display: grid;
-    gap: 10px;
-}
+/* Biomarkers */
+.biomarkers { display: grid; gap: 12px; }
 
 .marker {
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    background: #f8fbff;
-    padding: 12px;
+    background: #f8fafc;
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    border-left: 4px solid var(--primary);
 }
 
-.marker-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-}
-
-.marker-name {
-    font-weight: 700;
-}
-
+.marker-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.marker-name { font-weight: 700; font-size: 0.95rem; }
 .marker-source {
-    color: var(--muted);
-    font-size: 0.8rem;
+    font-size: 0.72rem;
+    background: #ede9fe;
+    color: #5b21b6;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 500;
 }
 
-.spark {
+.spark-bar {
     height: 6px;
     border-radius: 999px;
-    background: linear-gradient(90deg, #8db7ff 0%, #4f8ef7 40%, #70d995 100%);
-    margin-bottom: 8px;
+    background: #e2e8f0;
+    margin-bottom: 10px;
+    overflow: hidden;
 }
 
-.marker-value {
-    font-weight: 700;
+.spark-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.6s ease;
 }
+
+.spark-fill.normal { background: linear-gradient(90deg, var(--accent), #34d399); }
+.spark-fill.elevated { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+
+.marker-value { font-weight: 600; font-size: 0.9rem; }
+.marker-range { color: var(--muted); font-size: 0.75rem; margin-top: 2px; }
 
 .screening-btn {
     margin-top: auto;
-    font-size: 1.5rem;
-    padding: 14px 12px;
+    padding-top: 20px;
 }
+
+.screening-btn button {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), #059669);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(16,185,129,.3);
+    transition: 0.2s;
+}
+
+.screening-btn button:hover { transform: translateY(-2px); }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+    max-width: 340px;
+    width: 100%;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    animation: modalIn 0.25s ease;
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-icon {
+    width: 60px; height: 60px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 1.6rem;
+    color: white;
+}
+
+.modal h3 { font-size: 1.2rem; margin-bottom: 8px; }
+.modal p { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; line-height: 1.5; }
+
+.modal-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.modal-btn:hover { opacity: 0.9; }
 </style>
 </head>
 <body>
 <div class="app">
-    <section id="homeView">
-        <div class="top-bar">
-            <h1>Animal Cards</h1>
-            <p>Swipe through pets and open info.</p>
-            <p class="swipe-note">Swipe left/right on cards</p>
+
+    <!-- HOME VIEW -->
+    <section id="homeView" class="view active">
+        <div class="home-header">
+            <h1>🐾 PetPages</h1>
+            <p>Your pets' health at a glance</p>
         </div>
+
         <div class="carousel-wrap" id="homeCarousel">
             <div class="carousel-track" id="homeTrack">
+                <!-- Charlie -->
                 <article class="carousel-page">
                     <div class="pet-card">
                         <div class="avatar">
                             <img src="Golden_Retriever_Pup_2.jpg" alt="Charlie">
                         </div>
-                        <div class="pet-line">Charlie</div>
-                        <div class="pet-meta">Age: 4 years</div>
-                        <div class="status">Health:<span class="status-badge">healthy</span></div>
-                        <button class="info-btn" type="button" data-open-detail="0">info</button>
+                        <div class="pet-name">Charlie</div>
+                        <div class="pet-breed">Golden Retriever</div>
+                        <div class="pet-stats">
+                            <div class="pet-stat"><div class="pet-stat-value">4</div><div class="pet-stat-label">Years</div></div>
+                            <div class="pet-stat"><div class="pet-stat-value">31kg</div><div class="pet-stat-label">Weight</div></div>
+                        </div>
+                        <div class="health-badge">Healthy</div>
+                        <button class="info-btn" data-open-detail="0">View Profile</button>
                     </div>
                 </article>
 
+                <!-- Bartje -->
                 <article class="carousel-page">
                     <div class="pet-card">
                         <div class="avatar">
-                            <img src="Golden_Retriever_Pup_2.jpg" alt="Milo">
+                            <img src="katjpg.jpg" alt="Bartje">
                         </div>
-                        <div class="pet-line">Milo</div>
-                        <div class="pet-meta">Age: 2 years</div>
-                        <div class="status">Health:<span class="status-badge">healthy</span></div>
-                        <button class="info-btn" type="button" data-open-detail="1">info</button>
+                        <div class="pet-name">Bartje</div>
+                        <div class="pet-breed">European Shorthair</div>
+                        <div class="pet-stats">
+                            <div class="pet-stat"><div class="pet-stat-value">3</div><div class="pet-stat-label">Years</div></div>
+                            <div class="pet-stat"><div class="pet-stat-value">4.2kg</div><div class="pet-stat-label">Weight</div></div>
+                        </div>
+                        <div class="health-badge">Healthy</div>
+                        <button class="info-btn" data-open-detail="1">View Profile</button>
                     </div>
                 </article>
 
+                <!-- Add -->
                 <article class="carousel-page">
-                    <div class="add-card" aria-label="Add pet">+</div>
+                    <div class="add-card" id="addPetCard">
+                        <div class="add-icon">+</div>
+                        <div class="add-label">Add a pet</div>
+                    </div>
                 </article>
             </div>
         </div>
+
+        <div class="dots" id="homeDots">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
     </section>
 
-    <section id="detailView" class="hidden">
-        <div class="details-shell">
-            <div class="details-header">
-                <button class="back-btn" id="backBtn" type="button">← Back</button>
-                <div class="details-title" id="detailPetName">Charlie</div>
-            </div>
+    <!-- DETAIL VIEW -->
+    <section id="detailView" class="view">
+        <div class="detail-header">
+            <button class="back-btn" id="backBtn">←</button>
+            <span class="detail-pet-name" id="detailPetName">Charlie</span>
+        </div>
 
-            <div class="details-swiper" id="detailSwiper">
-                <div class="details-track" id="detailTrack">
-                    <div class="detail-page">
-                        <article class="detail-card">
-                            <h2>Pet profile</h2>
-                            <div class="profile-grid">
-                                <div class="profile-item"><strong>Name</strong><span id="profileName">Charlie</span></div>
-                                <div class="profile-item"><strong>Species</strong><span id="profileSpecies">Dog</span></div>
-                                <div class="profile-item"><strong>Breed</strong><span id="profileBreed">Golden Retriever</span></div>
-                                <div class="profile-item"><strong>Age</strong><span id="profileAge">4 years</span></div>
-                                <div class="profile-item"><strong>Weight</strong><span id="profileWeight">31 kg</span></div>
-                                <div class="profile-item"><strong>Condition</strong><span id="profileCondition">Healthy</span></div>
-                            </div>
-                        </article>
-                    </div>
+        <div class="tab-bar" id="tabBar">
+            <div class="tab active" data-tab="0">Profile</div>
+            <div class="tab" data-tab="1">Medical Data</div>
+        </div>
 
-                    <div class="detail-page">
-                        <article class="detail-card">
-                            <h2>Medical data</h2>
-                            <div class="biomarkers">
-                                <div class="marker">
-                                    <div class="marker-header">
-                                        <span class="marker-name">Urine pH</span>
-                                        <span class="marker-source">Urine test</span>
-                                    </div>
-                                    <div class="spark"></div>
-                                    <div class="marker-value">6.4 (normal range 6.0-7.0)</div>
-                                </div>
-                                <div class="marker">
-                                    <div class="marker-header">
-                                        <span class="marker-name">Protein</span>
-                                        <span class="marker-source">Urine test</span>
-                                    </div>
-                                    <div class="spark"></div>
-                                    <div class="marker-value">Trace</div>
-                                </div>
-                                <div class="marker">
-                                    <div class="marker-header">
-                                        <span class="marker-name">Cortisol</span>
-                                        <span class="marker-source">Saliva test</span>
-                                    </div>
-                                    <div class="spark"></div>
-                                    <div class="marker-value">0.83 μg/dL</div>
-                                </div>
-                                <div class="marker">
-                                    <div class="marker-header">
-                                        <span class="marker-name">Inflammation index (CRP)</span>
-                                        <span class="marker-source">Saliva test</span>
-                                    </div>
-                                    <div class="spark"></div>
-                                    <div class="marker-value">Low risk trend</div>
-                                </div>
+        <div class="details-swiper" id="detailSwiper">
+            <div class="details-track" id="detailTrack">
+                <!-- Profile -->
+                <div class="detail-page">
+                    <article class="detail-card">
+                        <h2>Pet Profile</h2>
+                        <div class="profile-grid">
+                            <div class="profile-item"><span class="profile-item-label">Name</span><span class="profile-item-value" id="profileName">Charlie</span></div>
+                            <div class="profile-item"><span class="profile-item-label">Species</span><span class="profile-item-value" id="profileSpecies">Dog</span></div>
+                            <div class="profile-item"><span class="profile-item-label">Breed</span><span class="profile-item-value" id="profileBreed">Golden Retriever</span></div>
+                            <div class="profile-item"><span class="profile-item-label">Age</span><span class="profile-item-value" id="profileAge">4 years</span></div>
+                            <div class="profile-item"><span class="profile-item-label">Weight</span><span class="profile-item-value" id="profileWeight">31 kg</span></div>
+                            <div class="profile-item"><span class="profile-item-label">Status</span><span class="profile-item-value" id="profileCondition">Healthy</span></div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Medical -->
+                <div class="detail-page">
+                    <article class="detail-card">
+                        <h2>Medical Data</h2>
+                        <div class="biomarkers">
+                            <div class="marker">
+                                <div class="marker-header"><span class="marker-name">Urine pH</span><span class="marker-source">Urine</span></div>
+                                <div class="spark-bar"><div class="spark-fill normal" style="width:65%"></div></div>
+                                <div class="marker-value">6.4</div>
+                                <div class="marker-range">Normal range: 6.0 – 7.0</div>
                             </div>
-                            <button class="screening-btn" id="screeningBtn" type="button">request screening</button>
-                        </article>
-                    </div>
+                            <div class="marker">
+                                <div class="marker-header"><span class="marker-name">Protein</span><span class="marker-source">Urine</span></div>
+                                <div class="spark-bar"><div class="spark-fill normal" style="width:20%"></div></div>
+                                <div class="marker-value">Trace</div>
+                                <div class="marker-range">Normal: Negative – Trace</div>
+                            </div>
+                            <div class="marker">
+                                <div class="marker-header"><span class="marker-name">Cortisol</span><span class="marker-source">Saliva</span></div>
+                                <div class="spark-bar"><div class="spark-fill normal" style="width:42%"></div></div>
+                                <div class="marker-value">0.83 μg/dL</div>
+                                <div class="marker-range">Normal: 0.5 – 1.2 μg/dL</div>
+                            </div>
+                            <div class="marker">
+                                <div class="marker-header"><span class="marker-name">CRP (Inflammation)</span><span class="marker-source">Saliva</span></div>
+                                <div class="spark-bar"><div class="spark-fill normal" style="width:15%"></div></div>
+                                <div class="marker-value">Low risk</div>
+                                <div class="marker-range">Trending stable</div>
+                            </div>
+                        </div>
+                        <div class="screening-btn">
+                            <button id="screeningBtn">Request Screening</button>
+                        </div>
+                    </article>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Add Pet Modal -->
+    <div class="modal-overlay" id="addModal">
+        <div class="modal">
+            <div class="modal-icon">🐾</div>
+            <h3>Add a New Pet</h3>
+            <p>This feature is coming soon! You'll be able to register a new pet and start tracking their health biomarkers.</p>
+            <button class="modal-btn" id="modalClose">Got it</button>
+        </div>
+    </div>
 </div>
 
 <script>
 const pets = [
-    { name: "Charlie", species: "Dog", breed: "Golden Retriever", age: "4 years", weight: "31 kg", condition: "Healthy" },
-    { name: "Milo", species: "Dog", breed: "Labrador Mix", age: "2 years", weight: "27 kg", condition: "Healthy" }
+    { name: 'Charlie', species: 'Dog', breed: 'Golden Retriever', age: '4 years', weight: '31 kg', condition: 'Healthy' },
+    { name: 'Bartje', species: 'Cat', breed: 'European Shorthair', age: '3 years', weight: '4.2 kg', condition: 'Healthy' }
 ];
 
-const homeView = document.getElementById("homeView");
-const detailView = document.getElementById("detailView");
-const homeTrack = document.getElementById("homeTrack");
-const detailTrack = document.getElementById("detailTrack");
+const homeView = document.getElementById('homeView');
+const detailView = document.getElementById('detailView');
+const homeTrack = document.getElementById('homeTrack');
+const detailTrack = document.getElementById('detailTrack');
+const dots = document.querySelectorAll('.dot');
+const tabs = document.querySelectorAll('.tab');
 
 let homeIndex = 0;
 let detailIndex = 0;
+const totalHome = 3;
 
-function bindSwipeArea(element, callback) {
-    let startX = 0;
-    let moved = false;
+function updateDots() {
+    dots.forEach((d, i) => d.classList.toggle('active', i === homeIndex));
+}
 
-    element.addEventListener("touchstart", (event) => {
-        startX = event.touches[0].clientX;
-        moved = false;
-    }, { passive: true });
-
-    element.addEventListener("touchmove", (event) => {
-        const deltaX = event.touches[0].clientX - startX;
-        if (Math.abs(deltaX) > 24) {
-            moved = true;
-        }
-    }, { passive: true });
-
-    element.addEventListener("touchend", (event) => {
-        const endX = event.changedTouches[0].clientX;
-        const deltaX = endX - startX;
-        if (!moved || Math.abs(deltaX) < 40) {
-            return;
-        }
-        callback(deltaX < 0 ? "left" : "right");
-    });
+function updateTabs() {
+    tabs.forEach((t, i) => t.classList.toggle('active', i === detailIndex));
 }
 
 function renderHome() {
     homeTrack.style.transform = `translateX(-${homeIndex * 100}%)`;
+    updateDots();
 }
 
 function renderDetails() {
     detailTrack.style.transform = `translateX(-${detailIndex * 100}%)`;
+    updateTabs();
 }
 
-function setProfile(petIndex) {
-    const pet = pets[petIndex];
-    document.getElementById("detailPetName").textContent = pet.name;
-    document.getElementById("profileName").textContent = pet.name;
-    document.getElementById("profileSpecies").textContent = pet.species;
-    document.getElementById("profileBreed").textContent = pet.breed;
-    document.getElementById("profileAge").textContent = pet.age;
-    document.getElementById("profileWeight").textContent = pet.weight;
-    document.getElementById("profileCondition").textContent = pet.condition;
+function setProfile(i) {
+    const pet = pets[i];
+    document.getElementById('detailPetName').textContent = pet.name;
+    document.getElementById('profileName').textContent = pet.name;
+    document.getElementById('profileSpecies').textContent = pet.species;
+    document.getElementById('profileBreed').textContent = pet.breed;
+    document.getElementById('profileAge').textContent = pet.age;
+    document.getElementById('profileWeight').textContent = pet.weight;
+    document.getElementById('profileCondition').textContent = pet.condition;
 }
 
-function openDetails(index) {
-    setProfile(index);
+function showView(view) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    view.classList.add('active');
+}
+
+function openDetails(i) {
+    setProfile(i);
     detailIndex = 0;
     renderDetails();
-    homeView.classList.add("hidden");
-    detailView.classList.remove("hidden");
+    showView(detailView);
 }
 
-function closeDetails() {
-    detailView.classList.add("hidden");
-    homeView.classList.remove("hidden");
-}
-
-document.querySelectorAll("[data-open-detail]").forEach((button) => {
-    button.addEventListener("click", () => {
-        const petIndex = Number(button.dataset.openDetail);
-        openDetails(petIndex);
+// Swipe helper
+function bindSwipe(el, cb) {
+    let startX = 0, moved = false;
+    el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; moved = false; }, { passive: true });
+    el.addEventListener('mousedown', e => { startX = e.clientX; moved = false;
+        const onMove = ev => { if (Math.abs(ev.clientX - startX) > 20) moved = true; };
+        const onUp = ev => {
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onUp);
+            const d = ev.clientX - startX;
+            if (moved && Math.abs(d) > 40) cb(d < 0 ? 'left' : 'right');
+        };
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
     });
+    el.addEventListener('touchmove', e => { if (Math.abs(e.touches[0].clientX - startX) > 20) moved = true; }, { passive: true });
+    el.addEventListener('touchend', e => {
+        const d = e.changedTouches[0].clientX - startX;
+        if (moved && Math.abs(d) > 40) cb(d < 0 ? 'left' : 'right');
+    });
+}
+
+// Event: info buttons
+document.querySelectorAll('[data-open-detail]').forEach(btn => {
+    btn.addEventListener('click', () => openDetails(Number(btn.dataset.openDetail)));
 });
 
-document.getElementById("backBtn").addEventListener("click", closeDetails);
-document.getElementById("screeningBtn").addEventListener("click", () => {
-    alert("Screening request submitted for urine/saliva biomarkers (demo).");
+// Event: back
+document.getElementById('backBtn').addEventListener('click', () => showView(homeView));
+
+// Event: tabs
+tabs.forEach(t => t.addEventListener('click', () => { detailIndex = Number(t.dataset.tab); renderDetails(); }));
+
+// Event: screening
+document.getElementById('screeningBtn').addEventListener('click', () => {
+    alert('Screening request submitted! A urine/saliva test kit will be sent to you.');
 });
 
-bindSwipeArea(document.getElementById("homeCarousel"), (direction) => {
-    const max = document.querySelectorAll(".carousel-page").length - 1;
-    if (direction === "left" && homeIndex < max) {
-        homeIndex += 1;
-    }
-    if (direction === "right" && homeIndex > 0) {
-        homeIndex -= 1;
-    }
+// Event: add pet
+document.getElementById('addPetCard').addEventListener('click', () => {
+    document.getElementById('addModal').classList.add('active');
+});
+
+document.getElementById('modalClose').addEventListener('click', () => {
+    document.getElementById('addModal').classList.remove('active');
+});
+
+document.getElementById('addModal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) document.getElementById('addModal').classList.remove('active');
+});
+
+// Swipe: home carousel
+bindSwipe(document.getElementById('homeCarousel'), dir => {
+    if (dir === 'left' && homeIndex < totalHome - 1) homeIndex++;
+    if (dir === 'right' && homeIndex > 0) homeIndex--;
     renderHome();
 });
 
-bindSwipeArea(document.getElementById("detailSwiper"), (direction) => {
-    if (direction === "left" && detailIndex < 1) {
-        detailIndex += 1;
-    }
-    if (direction === "right" && detailIndex > 0) {
-        detailIndex -= 1;
-    }
+// Swipe: detail pages
+bindSwipe(document.getElementById('detailSwiper'), dir => {
+    if (dir === 'left' && detailIndex < 1) detailIndex++;
+    if (dir === 'right' && detailIndex > 0) detailIndex--;
     renderDetails();
 });
 
